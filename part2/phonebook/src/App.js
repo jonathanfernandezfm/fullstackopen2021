@@ -22,12 +22,17 @@ const App = () => {
 		const existingPerson = persons.find((person) => person.name === newName);
 		if (existingPerson) {
 			if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-				personsService.update(existingPerson.id, { ...existingPerson, number: newNumber }).then((data) => {
-					setPersons(persons.map((person) => (person.id !== existingPerson.id ? person : data)));
-					setNewName('');
-					setNewNumber('');
-					setNotification({ message: `Number for ${data.name} changed`, type: 'notification' });
-				});
+				personsService
+					.update(existingPerson.id, { ...existingPerson, number: newNumber })
+					.then((data) => {
+						setPersons(persons.map((person) => (person.id !== existingPerson.id ? person : data)));
+						setNewName('');
+						setNewNumber('');
+						setNotification({ message: `Number for ${data.name} changed`, type: 'notification' });
+					})
+					.catch((error) => {
+						setNotification({ message: `${error.response.data.error}`, type: 'error' });
+					});
 			}
 		} else {
 			personsService
@@ -40,6 +45,9 @@ const App = () => {
 					setNewName('');
 					setNewNumber('');
 					setNotification({ message: `Added ${data.name}`, type: 'notification' });
+				})
+				.catch((error) => {
+					setNotification({ message: `${error.response.data.error}`, type: 'error' });
 				});
 		}
 	};
