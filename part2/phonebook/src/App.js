@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 import Filter from './components/Filter';
+import personsService from './services/persons';
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
@@ -11,22 +11,40 @@ const App = () => {
 	const [search, setSearch] = useState('');
 
 	useEffect(() => {
-		axios.get('http://localhost:3001/persons').then((response) => {
-			setPersons(response.data);
-		});
+		personsService.getAll().then((data) => setPersons(data));
 	}, []);
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
 
-		if (persons.find((person) => person.name === newName))
-			return window.alert(`${newName} is already added to phonebook`);
+		const existingPerson = persons.find((person) => person.name === newName);
+		if (existingPerson) {
+			if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+				personsService.update(existingPerson.id, { ...existingPerson, number: newNumber }).then((data) => {
+					setPersons(persons.map((person) => (person.id !== existingPerson.id ? person : data)));
+					setNewName('');
+					setNewNumber('');
+				});
+			}
+		} else {
+			personsService
+				.create({
+					name: newName,
+					number: newNumber,
+				})
+				.then((data) => {
+					setPersons(persons.concat(data));
+					setNewName('');
+					setNewNumber('');
+				});
+		}
+	};
 
-		const copy = [...persons];
-		copy.push({ name: newName, number: newNumber });
-		setPersons(copy);
-		setNewName('');
-		setNewNumber('');
+	const handleRemove = (p) => {
+		if (window.confirm(`Delete ${p.name}?`))
+			personsService.remove(p.id).then((response) => {
+				setPersons(persons.filter((person) => person.id !== p.id));
+			});
 	};
 
 	const handleChangeName = (event) => {
@@ -56,7 +74,7 @@ const App = () => {
 				handleChangeNumber={handleChangeNumber}
 			/>
 			<h3>Numbers</h3>
-			<Persons persons={personsToShow} />
+			<Persons persons={personsToShow} handleRemove={handleRemove} />
 		</div>
 	);
 };
