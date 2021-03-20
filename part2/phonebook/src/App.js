@@ -3,12 +3,14 @@ import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 import Filter from './components/Filter';
 import personsService from './services/persons';
+import Notification from './components/Notification';
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
 	const [newName, setNewName] = useState('');
 	const [newNumber, setNewNumber] = useState('');
 	const [search, setSearch] = useState('');
+	const [notification, setNotification] = useState({});
 
 	useEffect(() => {
 		personsService.getAll().then((data) => setPersons(data));
@@ -24,6 +26,7 @@ const App = () => {
 					setPersons(persons.map((person) => (person.id !== existingPerson.id ? person : data)));
 					setNewName('');
 					setNewNumber('');
+					setNotification({ message: `Number for ${data.name} changed`, type: 'notification' });
 				});
 			}
 		} else {
@@ -36,15 +39,26 @@ const App = () => {
 					setPersons(persons.concat(data));
 					setNewName('');
 					setNewNumber('');
+					setNotification({ message: `Added ${data.name}`, type: 'notification' });
 				});
 		}
 	};
 
 	const handleRemove = (p) => {
 		if (window.confirm(`Delete ${p.name}?`))
-			personsService.remove(p.id).then((response) => {
-				setPersons(persons.filter((person) => person.id !== p.id));
-			});
+			personsService
+				.remove(p.id)
+				.then((response) => {
+					setPersons(persons.filter((person) => person.id !== p.id));
+				})
+				.catch((err) => {
+					console.log(err);
+					setPersons(persons.filter((person) => person.id !== p.id));
+					setNotification({
+						message: `Information of ${p.name} has already been removed from server`,
+						type: 'error',
+					});
+				});
 	};
 
 	const handleChangeName = (event) => {
@@ -61,9 +75,15 @@ const App = () => {
 
 	const personsToShow = persons.filter((person) => person.name.toLowerCase().includes(search.toLowerCase()));
 
+	if (notification)
+		setTimeout(() => {
+			setNotification(null);
+		}, 3000);
+
 	return (
 		<div>
 			<h2>Phonebook</h2>
+			<Notification notification={notification} />
 			<Filter search={search} handleChangeSearch={handleChangeSearch} />
 			<h3>add a new</h3>
 			<PersonForm
