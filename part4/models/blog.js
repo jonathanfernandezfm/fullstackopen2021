@@ -1,23 +1,14 @@
 const mongoose = require('mongoose');
-const config = require('../utils/config');
-const logger = require('../utils/logger');
-const mongoUrl = config.MONGODB_URI;
-
-mongoose
-	.connect(mongoUrl, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-		useFindAndModify: false,
-		useCreateIndex: true,
-	})
-	.then(() => logger.info('Database connected'))
-	.catch((error) => logger.error('error connecting to MongoDB:', error.message));
 
 const blogSchema = new mongoose.Schema({
 	title: { type: String, required: true },
 	author: { type: String, required: true },
-	url: { type: String, required: true },
+	url: String,
 	likes: { type: Number, default: 0 },
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'User',
+	},
 });
 
 blogSchema.set('toJSON', {
