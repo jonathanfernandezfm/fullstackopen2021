@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import blogService from '../services/blogs';
 import PropTypes from 'prop-types';
 
-const Blog = ({ blog, user, deleteBlog, update }) => {
+const Blog = ({ blog, user, deleteBlog, like }) => {
 	const [showInformation, setShowInformation] = useState(false);
 
 	const blogStyle = {
@@ -13,12 +12,6 @@ const Blog = ({ blog, user, deleteBlog, update }) => {
 		marginBottom: 5,
 	};
 
-	const handleLike = async (blog) => {
-		blog.likes++;
-		await blogService.update(blog);
-		update();
-	};
-
 	const handleDelete = async (blog) => {
 		if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
 			deleteBlog(blog);
@@ -26,7 +19,7 @@ const Blog = ({ blog, user, deleteBlog, update }) => {
 	};
 
 	return (
-		<div style={blogStyle}>
+		<div style={blogStyle} className="blog">
 			{blog.title} {blog.author}
 			<button onClick={() => setShowInformation(!showInformation)}>{showInformation ? 'hide' : 'view'}</button>
 			{showInformation && (
@@ -36,7 +29,7 @@ const Blog = ({ blog, user, deleteBlog, update }) => {
 						likes {blog.likes}{' '}
 						<button
 							onClick={() => {
-								handleLike(blog);
+								like(blog);
 							}}
 						>
 							like
@@ -62,7 +55,7 @@ Blog.propTypes = {
 	blog: PropTypes.object.isRequired,
 	user: PropTypes.object,
 	deleteBlog: PropTypes.func.isRequired,
-	update: PropTypes.func.isRequired,
+	like: PropTypes.func.isRequired,
 };
 
 export default Blog;

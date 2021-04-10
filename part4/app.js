@@ -35,6 +35,11 @@ app.use(express.json());
 // TOKEN EXTRACTOR
 app.use(middleware.tokenExtractor);
 
+if (process.env.NODE_ENV === 'test') {
+	const testingRouter = require('./controllers/testing');
+	app.use('/api/testing', testingRouter);
+}
+
 // ROUTES
 app.use('/api/blogs', blogRouter);
 app.use('/api/users', usersRouter);

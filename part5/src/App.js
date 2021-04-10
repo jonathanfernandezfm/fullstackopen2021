@@ -105,25 +105,13 @@ const App = () => {
 		}
 	};
 
-	// const updateBlog = async (blog) => {
-	// 	try {
-	// 		const blogUpdated = await blogService.update(blog);
-	// 		setBlogs(sort([...blogs]));
+	const handleLike = async (blog) => {
+		blog.likes++;
+		const newBlog = await blogService.update(blog);
+		const blogsUpdated = blogs.map((b) => (b.id === blogs.id ? newBlog : b));
 
-	// 		setNotification({
-	// 			message: `Blog updated: ${blogUpdated.title} by ${blogUpdated.author}`,
-	// 			type: 'notification',
-	// 		});
-	// 		setTimeout(() => {
-	// 			setNotification(null);
-	// 		}, 5000);
-	// 	} catch ({ response }) {
-	// 		setNotification({ message: 'Error updating blog', type: 'error' });
-	// 		setTimeout(() => {
-	// 			setNotification(null);
-	// 		}, 5000);
-	// 	}
-	// };
+		setBlogs(sort(blogsUpdated));
+	};
 
 	const handleLogout = () => {
 		setUser(null);
@@ -160,7 +148,7 @@ const App = () => {
 					<button onClick={() => setNewBlogVisible(false)}>cancel</button>
 				</div>
 			)}
-			<Blogs blogs={blogs} deleteBlog={deleteBlog} update={(blogs) => setBlogs(sort(blogs))} />
+			<Blogs blogs={blogs} deleteBlog={deleteBlog} like={handleLike} />
 		</div>
 	);
 };
