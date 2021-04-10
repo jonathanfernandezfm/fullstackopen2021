@@ -10,7 +10,7 @@ const App = () => {
 	const [blogs, setBlogs] = useState([]);
 	const [user, setUser] = useState(null);
 	const [notification, setNotification] = useState({});
-	const [loginVisible, setLoginVisible] = useState(false);
+	const [loginVisible, setLoginVisible] = useState(true);
 	const [newBlogVisible, setNewBlogVisible] = useState(false);
 
 	useEffect(() => {
@@ -23,6 +23,7 @@ const App = () => {
 		if (loggedUser) {
 			const user = JSON.parse(loggedUser);
 			setUser(user);
+			setLoginVisible(false);
 			blogService.setToken(user.token);
 			getBlogs();
 		}
@@ -148,7 +149,7 @@ const App = () => {
 					<button onClick={() => setNewBlogVisible(false)}>cancel</button>
 				</div>
 			)}
-			<Blogs blogs={blogs} deleteBlog={deleteBlog} like={handleLike} />
+			<Blogs user={user} blogs={blogs} deleteBlog={deleteBlog} like={handleLike} />
 		</div>
 	);
 };
