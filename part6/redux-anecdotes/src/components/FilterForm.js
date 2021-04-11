@@ -1,15 +1,13 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { filter } from '../reducers/filterReducer';
+import { connect } from 'react-redux';
 
-const FilterForm = () => {
-	const dispatch = useDispatch();
-
+const FilterForm = (props) => {
 	const handleChange = (event) => {
 		event.preventDefault();
 		const filterValue = event.target.value;
 
-		dispatch(filter(filterValue));
+		props.filter(filterValue);
 	};
 
 	const style = {
@@ -24,4 +22,9 @@ const FilterForm = () => {
 	);
 };
 
-export default FilterForm;
+const mapDispatchToProps = {
+	filter,
+};
+
+const ConnectedFilter = connect(null, mapDispatchToProps)(FilterForm);
+export default ConnectedFilter;

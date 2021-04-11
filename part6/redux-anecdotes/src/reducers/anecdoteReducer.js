@@ -5,7 +5,7 @@ const reducer = (state = [], action) => {
 		case 'UPDATE_ANECDOTE':
 			return state.map((anecdote) => (anecdote.id !== action.data.content.id ? anecdote : action.data.content));
 		case 'NEW_ANECDOTE':
-			return [...state, action.data.content];
+			return [...state, action.data];
 		case 'INIT_ANECDOTES':
 			return action.data;
 		default:
