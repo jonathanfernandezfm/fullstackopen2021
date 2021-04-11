@@ -8,7 +8,6 @@ const FilterForm = () => {
 	const handleChange = (event) => {
 		event.preventDefault();
 		const filterValue = event.target.value;
-		console.log(event.target.value);
 
 		dispatch(filter(filterValue));
 	};
