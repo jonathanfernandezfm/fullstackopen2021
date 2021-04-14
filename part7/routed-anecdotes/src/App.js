@@ -40,7 +40,6 @@ const App = () => {
 		}, 5000);
 	};
 
-	console.log('\n\n');
 	const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
 
 	const vote = (id) => {
